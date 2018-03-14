@@ -39,6 +39,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var textField: UITextField!
     
+    var titleVideoArray = ["Test"]
+    
+
+    
     
     @IBAction func getBttnTapped(_ sender: Any) {
         
@@ -69,21 +73,36 @@ class ViewController: UIViewController {
                 guard let items = youtubeVideo.items else {return}
                 for i in 0..<items.count {
                     guard let title = items[i].snippet?.title else {return}
-                    print(title)
+                    guard let description = items[i].snippet?.description else {return}
+                    self.titleVideoArray.append(title)
+                    
+                    print(title, description)
                 }
                 
             } catch {
                 print(error)
             }
+            
+            OperationQueue.main.addOperation() {
+                
+                // Main thread
+                
+                self.tableView.reloadData()
+            }
+            
             }.resume()
+        
+        //self.tableView.reloadData()
+        
     }
+ 
 }
 
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return 5
+        return titleVideoArray.count
     }
     
 
@@ -95,6 +114,8 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! TableCell
+        
+        cell.titleVideo.text = titleVideoArray[indexPath.row]
         
         return cell
     }
