@@ -22,6 +22,7 @@ struct ItemVideo: Decodable {
 
 struct Snippet: Decodable {
     var title: String?
+    var description: String?
 }
 
 struct idVideo: Decodable {
@@ -35,40 +36,72 @@ class ViewController: UIViewController {
     var dataArray = [[String: AnyObject]]()
     // store videoid , thumbnial , Title , Description
     
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var textField: UITextField!
+    
+    
     @IBAction func getBttnTapped(_ sender: Any) {
-
-        let videoType = "elite"
+        
+        guard let videoType = textField.text else {return}
         
         // can use any text
-    
+        
         let apiKey = "AIzaSyBSemhNCkZrRwZdGP1tNEAtBongiw68iIk"
         
         // create api key from google developer console for youtube
         
-        var urlString = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(videoType)&type=video&videoSyndicated=true&chart=mostPopular&maxResults=5&safeSearch=strict&order=relevance&order=viewCount&type=video&relevanceLanguage=en&regionCode=GB&key=\(apiKey)"
+        let urlString = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(videoType)&type=video&videoSyndicated=true&chart=mostPopular&maxResults=5&safeSearch=strict&order=relevance&order=viewCount&type=video&relevanceLanguage=en&regionCode=GB&key=\(apiKey)"
         
-                guard let url = URL(string: urlString) else {return}
-                let session = URLSession.shared
-                session.dataTask(with: url) { (data, response, error) in
-                    if let response = response {
-                      //  print(response)
-                    }
-        
-                    guard let data = data else {return}
-                    //print(data)
-        
-                    do {
-                        let json = try JSONSerialization.jsonObject(with: data, options: [])
-                        let youtubeVideo = try JSONDecoder().decode(YoutubeVideo.self, from: data)
-                        print(youtubeVideo.items)
-                    } catch {
-                        print(error)
-                    }
-                    }.resume()
-        
+        guard let url = URL(string: urlString) else {return}
+        let session = URLSession.shared
+        session.dataTask(with: url) { (data, response, error) in
+            if let response = response {
+             //   print(response)
+            }
+            
+            guard let data = data else {return}
+            //print(data)
+            
+            do {
+                //  let json = try JSONSerialization.jsonObject(with: data, options: [])
+                let youtubeVideo = try JSONDecoder().decode(YoutubeVideo.self, from: data)
+                
+                guard let items = youtubeVideo.items else {return}
+                for i in 0..<items.count {
+                    guard let title = items[i].snippet?.title else {return}
+                    print(title)
+                }
+                
+            } catch {
+                print(error)
+            }
+            }.resume()
     }
-   
 }
+
+extension ViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return 5
+    }
+    
+
+    
+}
+
+extension ViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! TableCell
+        
+        return cell
+    }
+    
+    
+}
+
 
 
 // MARK: - some different code
