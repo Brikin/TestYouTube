@@ -23,11 +23,16 @@ struct ItemVideo: Decodable {
 struct Snippet: Decodable {
     var title: String?
     var description: String?
+    var thumbnails: thumbnails
 }
 
-struct idVideo: Decodable {
-    var kind: String?
+struct thumbnails: Decodable {
+    var medium: TypeImage
     var videoId: String?
+}
+
+struct TypeImage: Decodable {
+    var url: String?
 }
 
 
@@ -39,8 +44,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var textField: UITextField!
     
-    var titleVideoArray = ["Test"]
-    
+    var titleVideoArray = [String]()
+    var imageVideoArray = [UIImage]()
 
     
     
@@ -71,10 +76,24 @@ class ViewController: UIViewController {
                 let youtubeVideo = try JSONDecoder().decode(YoutubeVideo.self, from: data)
                 
                 guard let items = youtubeVideo.items else {return}
+                
+            
                 for i in 0..<items.count {
                     guard let title = items[i].snippet?.title else {return}
                     guard let description = items[i].snippet?.description else {return}
+                    guard let imageURL = items[i].snippet?.thumbnails.medium.url else {return}
                     self.titleVideoArray.append(title)
+                    
+                    
+                    guard let url = URL(string: imageURL) else {return}
+                  
+                        guard let data = try? Data(contentsOf: url) else {return} //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
+                        OperationQueue.main.addOperation() {
+                            guard let image = UIImage(data: data) else {return}
+                            self.imageVideoArray.append(image)
+                        
+                    }
+                    
                     
                     print(title, description)
                 }
@@ -91,9 +110,6 @@ class ViewController: UIViewController {
             }
             
             }.resume()
-        
-        //self.tableView.reloadData()
-        
     }
  
 }
@@ -115,8 +131,10 @@ extension ViewController: UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! TableCell
         
-        cell.titleVideo.text = titleVideoArray[indexPath.row]
-        
+        if imageVideoArray.count & titleVideoArray.count > 0 {
+            cell.titleVideo.text = titleVideoArray[indexPath.row]
+            cell.imageVideo.image = imageVideoArray[indexPath.row]
+        }
         return cell
     }
     

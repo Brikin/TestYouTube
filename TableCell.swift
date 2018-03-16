@@ -11,7 +11,8 @@ import UIKit
 class TableCell: UITableViewCell {
     
     @IBOutlet weak var titleVideo: UILabel!
-   // @IBOutlet weak var descriptionVideo: UILabel!
+    @IBOutlet weak var descriptionVideo: UILabel!
+    @IBOutlet weak var imageVideo: UIImageView!
     
     
 }
