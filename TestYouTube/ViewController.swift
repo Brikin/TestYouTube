@@ -23,10 +23,10 @@ struct ItemVideo: Decodable {
 struct Snippet: Decodable {
     var title: String?
     var description: String?
-    var thumbnails: thumbnails
+    var thumbnails: Thumbnail
 }
 
-struct thumbnails: Decodable {
+struct Thumbnail: Decodable {
     var medium: TypeImage
     var videoId: String?
 }
@@ -46,6 +46,7 @@ class ViewController: UIViewController {
     
     var titleVideoArray = [String]()
     var imageVideoArray = [UIImage]()
+    var descriptionVideoArray = [String]()
 
     
     
@@ -83,15 +84,15 @@ class ViewController: UIViewController {
                     guard let description = items[i].snippet?.description else {return}
                     guard let imageURL = items[i].snippet?.thumbnails.medium.url else {return}
                     self.titleVideoArray.append(title)
-                    
+                    self.descriptionVideoArray.append(description)
                     
                     guard let url = URL(string: imageURL) else {return}
                   
-                        guard let data = try? Data(contentsOf: url) else {return} //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-                        OperationQueue.main.addOperation() {
+                    guard let data = try? Data(contentsOf: url) else {return} //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
+                    
+                    OperationQueue.main.addOperation() {
                             guard let image = UIImage(data: data) else {return}
                             self.imageVideoArray.append(image)
-                        
                     }
                     
                     
@@ -131,9 +132,13 @@ extension ViewController: UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! TableCell
         
-        if imageVideoArray.count & titleVideoArray.count > 0 {
+        if imageVideoArray.count & descriptionVideoArray.count & titleVideoArray.count > 0 {
             cell.titleVideo.text = titleVideoArray[indexPath.row]
+            cell.descriptionVideo.text = descriptionVideoArray[indexPath.row]
+            
+            cell.titleVideo.sizeToFit()
             cell.imageVideo.image = imageVideoArray[indexPath.row]
+
         }
         return cell
     }
