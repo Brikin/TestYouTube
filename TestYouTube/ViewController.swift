@@ -27,7 +27,7 @@ struct Snippet: Decodable {
 }
 
 struct Thumbnail: Decodable {
-    var medium: TypeImage
+    var `default`: TypeImage
     var videoId: String?
 }
 
@@ -43,10 +43,15 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var titleVideoArray = [String]()
     var imageVideoArray = [UIImage]()
     var descriptionVideoArray = [String]()
+    
+    override func viewDidLoad() {
+        activityIndicator.isHidden = true
+    }
 
     
     
@@ -63,6 +68,11 @@ class ViewController: UIViewController {
         let urlString = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(videoType)&type=video&videoSyndicated=true&chart=mostPopular&maxResults=5&safeSearch=strict&order=relevance&order=viewCount&type=video&relevanceLanguage=en&regionCode=GB&key=\(apiKey)"
         
         guard let url = URL(string: urlString) else {return}
+        
+        activityIndicator.isHidden = false
+        textField.isEnabled = false
+        activityIndicator.startAnimating()
+        
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
             if let response = response {
@@ -82,7 +92,7 @@ class ViewController: UIViewController {
                 for i in 0..<items.count {
                     guard let title = items[i].snippet?.title else {return}
                     guard let description = items[i].snippet?.description else {return}
-                    guard let imageURL = items[i].snippet?.thumbnails.medium.url else {return}
+                    guard let imageURL = items[i].snippet?.thumbnails.`default`.url else {return}
                     self.titleVideoArray.append(title)
                     self.descriptionVideoArray.append(description)
                     
@@ -108,6 +118,9 @@ class ViewController: UIViewController {
                 // Main thread
                 
                 self.tableView.reloadData()
+                self.activityIndicator.isHidden = true
+                self.textField.isEnabled = true
+                self.activityIndicator.stopAnimating()
             }
             
             }.resume()
