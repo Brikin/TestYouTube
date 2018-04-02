@@ -27,6 +27,7 @@ struct Snippet: Decodable {
 
 struct Thumbnail: Decodable {
     var `default`: TypeImage
+    var high: TypeImage
     var videoId: String?
 }
 
@@ -53,6 +54,7 @@ class ViewController: UIViewController {
     
     var titleVideoArray = [String]()
     var imageVideoArray = [UIImage]()
+    var sendImages = [UIImage]()
     var descriptionVideoArray = [String]()
     
     override func viewDidLoad() {
@@ -80,9 +82,9 @@ class ViewController: UIViewController {
         
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
-            if let response = response {
-             //   print(response)
-            }
+//            if let response = response {
+//             //   print(response)
+//            }
             
             guard let data = data else {return}
             //print(data)
@@ -97,17 +99,22 @@ class ViewController: UIViewController {
                 for i in 0..<items.count {
                     guard let title = items[i].snippet?.title else {return}
                     guard let description = items[i].snippet?.description else {return}
-                    guard let imageURL = items[i].snippet?.thumbnails.`default`.url else {return}
+                    guard let defaultImageURL = items[i].snippet?.thumbnails.`default`.url else {return}
+                    guard let highImageURL = items[i].snippet?.thumbnails.high.url else {return}
                     self.titleVideoArray.append(title)
                     self.descriptionVideoArray.append(description)
-                    
-                    guard let url = URL(string: imageURL) else {return}
+            
+                    guard let url = URL(string: defaultImageURL) else {return}
+                    guard let url2 = URL(string: highImageURL) else {return}
                   
-                    guard let data = try? Data(contentsOf: url) else {return} //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
+                    guard let data = try? Data(contentsOf: url) else {return}
+                    guard let data2 = try? Data(contentsOf: url2) else {return} //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
                     
                     OperationQueue.main.addOperation() {
-                            guard let image = UIImage(data: data) else {return}
-                            self.imageVideoArray.append(image)
+                        guard let image = UIImage(data: data) else {return}
+                        guard let highImage = UIImage(data: data2) else {return}
+                        self.imageVideoArray.append(image)
+                        self.sendImages.append(highImage)
                     }
                     
                     
@@ -163,7 +170,8 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let targetVc = storyboard.instantiateViewController(withIdentifier: "VideoDescritpionController") as! VideoDescritpionController
-        targetVc.descriptionVideo = descriptionVideoArray[indexPath.row]
+        targetVc.getDescription = descriptionVideoArray[indexPath.row]
+        targetVc.getImage = sendImages[indexPath.row]
         self.navigationController?.pushViewController(targetVc, animated: true)
         
   //      sendImage = cell.imageVideo.image!

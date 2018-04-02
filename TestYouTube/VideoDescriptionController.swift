@@ -10,8 +10,8 @@ import UIKit
 
 class VideoDescritpionController: UIViewController {
     
-    var descriptionVideo =  String()
-    var imageVideoSend = UIImage()
+    var getDescription =  String()
+    var getImage = UIImage()
     
     @IBOutlet weak var descriptionText: UILabel!
     @IBOutlet weak var imageVideo: UIImageView!
@@ -19,7 +19,8 @@ class VideoDescritpionController: UIViewController {
     
     override func viewDidLoad() {
       //  super.viewDidLoad()
-        descriptionText.text = descriptionVideo
+        descriptionText.text = getDescription
+        imageVideo.image = getImage
     }
     
 }
