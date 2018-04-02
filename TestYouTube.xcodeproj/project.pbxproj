@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		442200D12060FB5F00CCC0B2 /* VideoDescriptionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442200D02060FB5F00CCC0B2 /* VideoDescriptionController.swift */; };
 		4462E7562029A25D0089597C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4462E7552029A25D0089597C /* AppDelegate.swift */; };
 		4462E7582029A25D0089597C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4462E7572029A25D0089597C /* ViewController.swift */; };
 		4462E75B2029A25D0089597C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4462E7592029A25D0089597C /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		442200D02060FB5F00CCC0B2 /* VideoDescriptionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDescriptionController.swift; sourceTree = "<group>"; };
 		4462E7522029A25D0089597C /* TestYouTube.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestYouTube.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4462E7552029A25D0089597C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4462E7572029A25D0089597C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 			children = (
 				4462E7552029A25D0089597C /* AppDelegate.swift */,
 				4462E7572029A25D0089597C /* ViewController.swift */,
+				442200D02060FB5F00CCC0B2 /* VideoDescriptionController.swift */,
 				4462E7592029A25D0089597C /* Main.storyboard */,
 				4462E75C2029A25D0089597C /* Assets.xcassets */,
 				4462E75E2029A25D0089597C /* LaunchScreen.storyboard */,
@@ -139,6 +142,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				442200D12060FB5F00CCC0B2 /* VideoDescriptionController.swift in Sources */,
 				44AF95E4204EC31100BA354A /* TableCell.swift in Sources */,
 				4462E7582029A25D0089597C /* ViewController.swift in Sources */,
 				4462E7562029A25D0089597C /* AppDelegate.swift in Sources */,

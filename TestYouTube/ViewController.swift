@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 struct YoutubeVideo: Decodable {
     var etag: String?
     var regionCode: String?
@@ -38,12 +37,19 @@ struct TypeImage: Decodable {
 
 class ViewController: UIViewController {
     
+    var videoDescriptionController: VideoDescritpionController!
+    
     var dataArray = [[String: AnyObject]]()
     // store videoid , thumbnial , Title , Description
+    
+    
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    var sendDescription = String()
+    var sendImage = UIImage()
     
     var titleVideoArray = [String]()
     var imageVideoArray = [UIImage]()
@@ -52,9 +58,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         activityIndicator.isHidden = true
     }
+    
 
-    
-    
     @IBAction func getBttnTapped(_ sender: Any) {
         
         guard let videoType = textField.text else {return}
@@ -147,16 +152,34 @@ extension ViewController: UITableViewDataSource {
         
         if imageVideoArray.count & descriptionVideoArray.count & titleVideoArray.count > 0 {
             cell.titleVideo.text = titleVideoArray[indexPath.row]
-            cell.descriptionVideo.text = descriptionVideoArray[indexPath.row]
-            
             cell.titleVideo.sizeToFit()
+            cell.descriptionVideo.text = descriptionVideoArray[indexPath.row]
             cell.imageVideo.image = imageVideoArray[indexPath.row]
 
         }
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let targetVc = storyboard.instantiateViewController(withIdentifier: "VideoDescritpionController") as! VideoDescritpionController
+        targetVc.descriptionVideo = descriptionVideoArray[indexPath.row]
+        self.navigationController?.pushViewController(targetVc, animated: true)
+        
+  //      sendImage = cell.imageVideo.image!
+//        let vc = VideoDescritpionController(nibName: "VideoDescritpionController", bundle: nil)
+//        vc.descriptionVideo = sendDescription
+      
+    }
     
+   
+    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if let videoController = segue.destination as? VideoDescritpionController {
+//            videoController.descriptionVideo = sendDescription
+//         //   videoController.imageVideoSend = sendImage
+//            }
+//        }
 }
 
 
