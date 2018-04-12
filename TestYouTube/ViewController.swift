@@ -9,14 +9,16 @@
 import UIKit
 
 struct YoutubeVideo: Decodable {
-    var etag: String?
-    var regionCode: String?
     var items: [ItemVideo]?
 }
 
 struct ItemVideo: Decodable {
-    var kind: String?
     var snippet: Snippet?
+    var id: VideoId?
+}
+
+struct VideoId: Decodable {
+    var videoId: String
 }
 
 struct Snippet: Decodable {
@@ -52,16 +54,28 @@ class ViewController: UIViewController {
     var sendDescription = String()
     var sendImage = UIImage()
     
+    
     var titleVideoArray = [String]()
     var imageVideoArray = [UIImage]()
     var sendImages = [UIImage]()
     var descriptionVideoArray = [String]()
+    var sendVideoId = [String]()
     
     override func viewDidLoad() {
         activityIndicator.isHidden = true
+        textField.becomeFirstResponder()
     }
     
-
+    func unblockUI(kind: Bool) {
+        
+        activityIndicator.isHidden = kind
+        textField.isEnabled = kind
+        
+        if kind {
+            activityIndicator.stopAnimating()
+        } else {activityIndicator.startAnimating()}
+    }
+    
     @IBAction func getBttnTapped(_ sender: Any) {
         
         guard let videoType = textField.text else {return}
@@ -76,39 +90,40 @@ class ViewController: UIViewController {
         
         guard let url = URL(string: urlString) else {return}
         
-        activityIndicator.isHidden = false
-        textField.isEnabled = false
-        activityIndicator.startAnimating()
+        unblockUI(kind: false)
         
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
-//            if let response = response {
-//             //   print(response)
-//            }
+            //            if let response = response {
+            //                print(response)
+            //            }
             
             guard let data = data else {return}
             //print(data)
             
             do {
-                //  let json = try JSONSerialization.jsonObject(with: data, options: [])
+                
                 let youtubeVideo = try JSONDecoder().decode(YoutubeVideo.self, from: data)
                 
                 guard let items = youtubeVideo.items else {return}
                 
-            
+                
                 for i in 0..<items.count {
                     guard let title = items[i].snippet?.title else {return}
                     guard let description = items[i].snippet?.description else {return}
                     guard let defaultImageURL = items[i].snippet?.thumbnails.`default`.url else {return}
                     guard let highImageURL = items[i].snippet?.thumbnails.high.url else {return}
+                    guard let videoId = items[i].id?.videoId else {return}
                     self.titleVideoArray.append(title)
                     self.descriptionVideoArray.append(description)
-            
+                    self.sendVideoId.append(videoId)
+                    
+                    
                     guard let url = URL(string: defaultImageURL) else {return}
                     guard let url2 = URL(string: highImageURL) else {return}
-                  
+                    
                     guard let data = try? Data(contentsOf: url) else {return}
-                    guard let data2 = try? Data(contentsOf: url2) else {return} //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
+                    guard let data2 = try? Data(contentsOf: url2) else {return}
                     
                     OperationQueue.main.addOperation() {
                         guard let image = UIImage(data: data) else {return}
@@ -130,14 +145,12 @@ class ViewController: UIViewController {
                 // Main thread
                 
                 self.tableView.reloadData()
-                self.activityIndicator.isHidden = true
-                self.textField.isEnabled = true
-                self.activityIndicator.stopAnimating()
+                self.unblockUI(kind: true)
             }
             
             }.resume()
     }
- 
+    
 }
 
 extension ViewController: UITableViewDelegate {
@@ -146,9 +159,6 @@ extension ViewController: UITableViewDelegate {
         
         return titleVideoArray.count
     }
-    
-
-    
 }
 
 extension ViewController: UITableViewDataSource {
@@ -162,7 +172,7 @@ extension ViewController: UITableViewDataSource {
             cell.titleVideo.sizeToFit()
             cell.descriptionVideo.text = descriptionVideoArray[indexPath.row]
             cell.imageVideo.image = imageVideoArray[indexPath.row]
-
+            
         }
         return cell
     }
@@ -172,22 +182,12 @@ extension ViewController: UITableViewDataSource {
         let targetVc = storyboard.instantiateViewController(withIdentifier: "VideoDescritpionController") as! VideoDescritpionController
         targetVc.getDescription = descriptionVideoArray[indexPath.row]
         targetVc.getImage = sendImages[indexPath.row]
+        targetVc.titleVideo = titleVideoArray[indexPath.row]
+        targetVc.getVideoId = sendVideoId[indexPath.row]
         self.navigationController?.pushViewController(targetVc, animated: true)
-        
-  //      sendImage = cell.imageVideo.image!
-//        let vc = VideoDescritpionController(nibName: "VideoDescritpionController", bundle: nil)
-//        vc.descriptionVideo = sendDescription
-      
+    
     }
-    
-   
-    
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if let videoController = segue.destination as? VideoDescritpionController {
-//            videoController.descriptionVideo = sendDescription
-//         //   videoController.imageVideoSend = sendImage
-//            }
-//        }
+
 }
 
 

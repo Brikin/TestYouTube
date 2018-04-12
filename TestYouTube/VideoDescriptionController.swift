@@ -8,19 +8,26 @@
 
 import UIKit
 
+
 class VideoDescritpionController: UIViewController {
     
-    var getDescription =  String()
+    var getDescription = String()
     var getImage = UIImage()
+    var titleVideo = String()
+    var getVideoId = String()
     
     @IBOutlet weak var descriptionText: UILabel!
     @IBOutlet weak var imageVideo: UIImageView!
+    
+    @IBAction func tapImage(_ sender: UITapGestureRecognizer) {
+        
+    }
     
     
     override func viewDidLoad() {
       //  super.viewDidLoad()
         descriptionText.text = getDescription
         imageVideo.image = getImage
+        navigationItem.title = titleVideo
     }
-    
 }
